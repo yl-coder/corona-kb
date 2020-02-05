@@ -14,12 +14,14 @@ from pyspark.sql.functions import year, month, dayofmonth, hour, weekofyear, dat
 from pyspark.sql.types import DateType, TimestampType, IntegerType,BooleanType,StringType
 import uuid
 from pyspark.sql.functions import udf, lit
+import psycopg2
+from sql_queries import create_table_queries
 
 config = configparser.ConfigParser()
 config.read('dl.cfg')
 
-os.environ['AWS_ACCESS_KEY_ID']=config.get("KEYS", "AWS_ACCESS_KEY_ID")
-os.environ['AWS_SECRET_ACCESS_KEY']=config.get("KEYS", "AWS_SECRET_ACCESS_KEY")
+# os.environ['AWS_ACCESS_KEY_ID']=config.get("KEYS", "AWS_ACCESS_KEY_ID")
+# os.environ['AWS_SECRET_ACCESS_KEY']=config.get("KEYS", "AWS_SECRET_ACCESS_KEY")
 
 LAST_UPDATE_DOWNLOAD_SITE=config.get("SITES", "LAST_UPDATE_DOWNLOAD_SITE")
 COUNTRY_CODE_SITE=config.get("SITES", "COUNTRY_CODE_SITE")
@@ -104,6 +106,8 @@ def process_corona_data(spark):
     modDf = modDf.withColumn("country_code", countryCodeUdf(modDf["Country/Region"]))
 
     coronaFctDf = modDf.select(F.col("Country/Region").alias("country_name"), "country_code", "total_confirmed", "total_deaths", "total_recovered")
+    
+    coronaFctDf = coronaFctDf.filter("country_code IS NOT NULL")
 
     coronaFctDf.write.mode("overwrite") \
         .format("jdbc") \
@@ -156,11 +160,21 @@ def fetch_data():
     source_corona_content = str(requests.get(CORONA_STATS_SITE).content, "utf8")
     subprocess.call("echo \"" + source_corona_content + "\"" + " > data/corona.csv", shell=True)
 
-
+def create_tables(cur, conn):
+    """Creates target tables"""
+    for query in create_table_queries:
+        cur.execute(query)
+        conn.commit()
+    
 def main():
     """
     The main point of entry.
     """
+    
+    conn = psycopg2.connect("host={} dbname={} user={} password={} port={}".format(*config['CLUSTER'].values()))
+    cur = conn.cursor()
+    
+    create_tables(cur, conn)
 
     spark = create_spark_session()
     
