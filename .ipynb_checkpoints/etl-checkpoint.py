@@ -74,9 +74,9 @@ def process_country_dim_data(spark, eventDf, coronaFctDf):
 
     unionedDf = countryDimDfUnionLeft.union(countryDimDfUnionRight)
 
-    countryDimDf = unionedDf.filter(checkIfExistsInDict(unionedDf.country_code)).withColumn("id", uuidUdf())
+    countryDimDf = unionedDf.filter(checkIfExistsInDict(unionedDf.country_code))
 
-    countryDimDf = countryDimDf.join(coronaFctDf, "country_code").select("country_code", "country_name", "total_confirmed", "total_deaths", "total_recovered", "id")
+    countryDimDf = coronaFctDf.join(countryDimDf, "country_code", how='left').select("country_code", "country_name", "total_confirmed", "total_deaths", "total_recovered")
 
     countryDimDf = countryDimDf.union(existingCountryDf);
 
@@ -121,8 +121,6 @@ def process_corona_data(spark):
 
 def process_event_data(spark):
     
-   
-    
     df = spark.read.format("csv").option("delimiter", "\t").option("inferschema", "true").option("header", "true").load("data/source_event.csv")
 
     filteredDs = df.filter(checkIfExistsInDict(df.Actor1CountryCode) | checkIfExistsInDict(df.Actor2CountryCode)).filter(df.Sourceurl.like("%corona%"))
@@ -166,6 +164,23 @@ def create_tables(cur, conn):
         cur.execute(query)
         conn.commit()
     
+def check_file_exists(filePath):
+    if os.path.isfile(filePath):
+        print ("File exist")
+    else:
+        print ("File not exist")
+        raise SystemExit('Error: ' + filePath + ' does not exists')
+        
+def check_has_records(table, cur, conn):
+    cur.execute("SELECT COUNT(*) FROM " + JDBC_URL_SCHEMA + table)
+    count = cur.rowcount
+    conn.commit()
+    if (count > 0):
+        print (table + " has records")
+    else:
+        print (table + " has no records")
+        raise SystemExit('Error: ' + table + ' has no records')
+    
 def main():
     """
     The main point of entry.
@@ -179,10 +194,14 @@ def main():
     spark = create_spark_session()
     
     fetch_data()
+    check_file_exists("data/corona.csv")
+    check_file_exists("data/source_event.csv")
     eventDf = process_event_data(spark)
     coronaDf = process_corona_data(spark)
     process_country_dim_data(spark, eventDf, coronaDf)
-
-
+    check_has_records("news_events_fct",cur, conn)
+    check_has_records("country_dim",cur, conn)
+    check_has_records("corona_facts",cur, conn)
+    
 if __name__ == "__main__":
     main()

@@ -12,12 +12,11 @@ corona_facts_table_create = ("create table if not exists coronakb.corona_facts\
 
 country_dim_table_create = ("create table if not exists coronakb.country_dim\
 (\
-    country_code    text,\
     country_name    text,\
     total_confirmed bigint,\
     total_deaths    bigint,\
     total_recovered bigint,\
-    id              text not null\
+        country_code    text not null \
         constraint country_dim_pk\
             primary key\
 );")
