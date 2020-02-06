@@ -143,5 +143,6 @@ We can setup read replica to increase the read capacity of the database.
 
  - data/ : Temp folder to store tmp files
  - dl.cfg : Configuration for cred
+ - sql_queries.py: sql queries to create the tables.
  - etl.py: etl main file. You can run main() method here to start the etl process
  - README.md: This file that you are reading.
