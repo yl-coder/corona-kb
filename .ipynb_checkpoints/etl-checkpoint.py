@@ -57,7 +57,7 @@ def create_spark_session():
     return spark
     
 def process_country_dim_data(spark, eventDf, coronaFctDf):
-     """
+    """
     Process the country dim data
 
     Parameters
@@ -69,6 +69,7 @@ def process_country_dim_data(spark, eventDf, coronaFctDf):
     coronaFctDf : Dataframe
         The corona fact dataframe
     """
+    
     existingCountryDf = spark.read \
     .format("jdbc") \
     .option("url", JDBC_URL) \
