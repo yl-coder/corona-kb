@@ -57,7 +57,18 @@ def create_spark_session():
     return spark
     
 def process_country_dim_data(spark, eventDf, coronaFctDf):
-    
+     """
+    Process the country dim data
+
+    Parameters
+    ----------
+    spark : SparkSession
+        Spark Session 
+    eventDf : Dataframe
+        The event dataframe
+    coronaFctDf : Dataframe
+        The corona fact dataframe
+    """
     existingCountryDf = spark.read \
     .format("jdbc") \
     .option("url", JDBC_URL) \
@@ -92,6 +103,14 @@ def process_country_dim_data(spark, eventDf, coronaFctDf):
         .save();
     
 def process_corona_data(spark):
+    """
+    Process the country corona data and return the corona dataframe
+
+    Parameters
+    ----------
+    spark : SparkSession
+        Spark Session 
+    """
     
     coronaDf = spark.read.format("csv").option("delimiter", "\t").option("inferschema", "true").option("header", "true").load("data/corona.csv")
     modDf = coronaDf.groupBy("Country/Region").agg(F.sum("Confirmed").alias("total_confirmed"), F.sum("Deaths").alias("total_deaths"), F.sum("Recovered").alias("total_recovered"))
@@ -121,6 +140,15 @@ def process_corona_data(spark):
 
 def process_event_data(spark):
     
+    """
+    Process the event data
+
+    Parameters
+    ----------
+    spark : SparkSession
+        Spark Session 
+    """
+    
     df = spark.read.format("csv").option("delimiter", "\t").option("inferschema", "true").option("header", "true").load("data/source_event.csv")
 
     filteredDs = df.filter(checkIfExistsInDict(df.Actor1CountryCode) | checkIfExistsInDict(df.Actor2CountryCode)).filter(df.Sourceurl.like("%corona%"))
@@ -147,6 +175,9 @@ def process_event_data(spark):
 
     
 def fetch_data():
+    """
+    Fetch data from its source and store under local storage
+    """
     
     # Fetch event data
     urllib.request.urlretrieve(source_event_url, "data/event.csv.zip")
@@ -165,6 +196,13 @@ def create_tables(cur, conn):
         conn.commit()
     
 def check_file_exists(filePath):
+    """
+    Check if file exists in the filePath provided
+
+    Parameters
+    ----------
+    filePath : File Path of the local system
+    """
     if os.path.isfile(filePath):
         print ("File exist")
     else:
@@ -172,6 +210,18 @@ def check_file_exists(filePath):
         raise SystemExit('Error: ' + filePath + ' does not exists')
         
 def check_has_records(table, cur, conn):
+    """
+    Check if the table in the database has any records
+
+    Parameters
+    ----------
+    table : str
+        The table name
+    cur : cursor
+        The cur of the database connection
+    conn : connection
+        The connection of the database
+    """
     cur.execute("SELECT COUNT(*) FROM " + JDBC_URL_SCHEMA + table)
     count = cur.rowcount
     conn.commit()
