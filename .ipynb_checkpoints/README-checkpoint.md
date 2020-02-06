@@ -41,7 +41,7 @@ Link:https://docs.google.com/spreadsheets/d/1wQVypefm946ch4XDp37uZ-wartW4V7ILdg-
 
 Explore the Data: Identify data quality issues, like missing values, duplicate data, etc and Cleaning Steps
 
-GDELTv2 Dataset
+##### GDELTv2 Dataset
 Since we only want event that is related to corona virus and it's related country. There could be events that is not related to a country or coronavirus. The event country can be represented in Actor1CountryCode and c field. However, these fields could be empty or null.
 
 Necessary steps are in-place to make sure only valid values are considered. 
@@ -49,10 +49,10 @@ Necessary steps are in-place to make sure only valid values are considered.
 2) Only rows with valid country_code in Actor1CountryCode and Actor1CountryCode are filtered
 
 
-CAMEO Country Code Mapping
+##### CAMEO Country Code Mapping
 This is a well defined dataset. No necessary data cleaning is needed.
 
-Corona Stats
+##### Corona Stats
 This dataset only provide country name, and some of the used country name is not according to the CAMEO standard.
 The first step of data cleaning is to perform transforming of country name into CAMEO standard.
 
@@ -64,7 +64,7 @@ The next value we need is country_code, we get this data point by doing a revers
 ##### Conceptual Data Model
 
 
-The data model is based on galaxa schema. It is a extension of star schema where each dimension is from multiple facts.
+The data model is based on star schema. It is a extension of star schema where each dimension is from multiple facts.
 
 One of the use case is to retrieve the number of corona cases and news event for each country.
 
@@ -80,11 +80,13 @@ For this project, there's no complex dependency needed for the use of airflow. F
 #### Data Quality Checks
 
 
-1) Checked if file has been downloaded in filesystem
+##### Checked if file has been downloaded in filesystem
+
 check_file_exists("data/corona.csv")
 check_file_exists("data/source_event.csv")
 
-2) Check if there are records generated on the 3 tables
+##### Check if there are records generated on the 3 tables
+
 check_has_records("news_events_fct")
 check_has_records("country_dim")
 check_has_records("corona_facts")
