@@ -1,16 +1,10 @@
 import configparser
-from datetime import datetime
-import pandas as pd
-import configparser
 import subprocess
-from datetime import datetime
 import os
 import requests
 import urllib
 import pyspark.sql.functions as F
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import udf, col,unix_timestamp
-from pyspark.sql.functions import year, month, dayofmonth, hour, weekofyear, date_format
 from pyspark.sql.types import DateType, TimestampType, IntegerType,BooleanType,StringType
 import uuid
 from pyspark.sql.functions import udf, lit
