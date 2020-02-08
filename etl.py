@@ -26,7 +26,7 @@ JDBC_URL_SCHEMA=config.get("DB", "JDBC_URL_SCHEMA")
 JDBC_USER=config.get("DB", "JDBC_USER")
 JDBC_PASSWORD= config.get("DB", "JDBC_PASSWORD")
 
-EVENT_HEADER= config.get("CSVHEADER", "EVENT_HEADER")
+EVENT_HEADER="GlobalEventID\tDay\tMonthYear\tYear\tFractionDate\tActor1Code\tActor1Name\tActor1CountryCode\tActor1KnownGroupCode\tActor1EthnicCode\tActor1Religion1Code\tActor1Religion2Code\tActor1Type1Code\tActor1Type2Code\tActor1Type3Code\tActor2Code\tActor2Name\tActor2CountryCode\tActor2KnownGroupCode\tActor2EthnicCode\tActor2Religion1Code\tActor2Religion2Code\tActor2Type1Code\tActor2Type2Code\tActor2Type3Code\tIsRootEvent\tEventCode\tEventBaseCode\tEventRootCode\tQuadClass\tGoldsteinScale\tNumMentions\tNumSources\tNumArticles\tAvgTone\tActor1Geo_Type\tActor1Geo_Fullname\tActor1Geo_CountryCode\tActor1Geo_ADM1Code\tActor1Geo_ADM2Code\tActor1Geo_Lat\tActor1Geo_Long\tActor1Geo_FeatureID\tActor2Geo_Type\tActor2Geo_Fullname\tActor2Geo_CountryCode\tActor2Geo_ADM1Code\tActor2Geo_ADM2Code\tActor2Geo_Lat\tActor2Geo_Long\tActor2Geo_FeatureID\tActionGeo_Type\tActionGeo_Fullname\tActionGeo_CountryCode\tActionGeo_ADM1Code\tActionGeo_ADM2Code\tActionGeo_Lat\tActionGeo_Long\tActionGeo_FeatureID\tDateadded\tSourceurl\n"
 
 # Fetch country data
 source_event_url_content = requests.get(LAST_UPDATE_DOWNLOAD_SITE).content
@@ -46,7 +46,7 @@ def create_spark_session():
     """
     spark = SparkSession \
         .builder \
-        .config("spark.jars.packages", "org.apache.hadoop:hadoop-aws:2.7.3,org.postgresql:postgresql:9.4.1207.jre7") \
+        .config("spark.jars.packages", "org.postgresql:postgresql:9.4.1207.jre7") \
         .getOrCreate()
     return spark
     
@@ -145,7 +145,7 @@ def process_event_data(spark):
     """
     
     df = spark.read.format("csv").option("delimiter", "\t").option("inferschema", "true").option("header", "true").load("data/source_event.csv")
-
+    print(df.columns)
     filteredDs = df.filter(checkIfExistsInDict(df.Actor1CountryCode) | checkIfExistsInDict(df.Actor2CountryCode)).filter(df.Sourceurl.like("%corona%"))
 
     union1Df = filteredDs.select(filteredDs.Actor1CountryCode.alias("country_code"), filteredDs.Sourceurl.alias("url"), filteredDs.Dateadded.alias("date_added"))
