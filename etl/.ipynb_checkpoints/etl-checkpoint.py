@@ -181,15 +181,21 @@ def fetch_data():
                      "echo \"" + EVENT_HEADER + "\" > " + "data/header.txt && " + 
                      " cat data/header.txt data/temp.csv > data/source_event.csv && rm data/*.export.CSV", shell=True)
 
+
     CORONA_STATS_SITE_PARSED = CORONA_STATS_SITE.replace("DATE", datetime.today().strftime("%m-%d-%Y"))
     print(CORONA_STATS_SITE_PARSED)
     requestTry = requests.get(CORONA_STATS_SITE_PARSED);
     
     if (requestTry.status_code == 404) :
+        
         yesterday = datetime.today() - timedelta(days=1)
+        CORONA_STATS_SITE_PARSED = CORONA_STATS_SITE.replace("DATE", yesterday.strftime("%m-%d-%Y"))
+        print("ERROR, TRYING other site.. " + CORONA_STATS_SITE_PARSED)
         requestTry = requests.get(CORONA_STATS_SITE.replace("DATE", yesterday.strftime("%m-%d-%Y")))
     
     # Fetch corona data
+    print(str(requestTry.content, "utf8"));
+    urllib.request.urlretrieve(CORONA_STATS_SITE_PARSED, "data/corona.csv")
     source_corona_content = str(requestTry.content, "utf8")
     subprocess.call("echo \"" + source_corona_content + "\"" + " > data/corona.csv", shell=True)
 
