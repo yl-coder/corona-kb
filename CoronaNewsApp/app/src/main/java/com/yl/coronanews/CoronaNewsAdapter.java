@@ -49,6 +49,7 @@ public class CoronaNewsAdapter extends
         holder.setIsRecyclable(false);
 
         // Set item views based on your views and data model
+        holder.linktext.setText(contact);
         holder.richLinkView.setLink(contact, new ViewListener() {
             @Override
             public void onSuccess(boolean status) {
@@ -73,6 +74,7 @@ public class CoronaNewsAdapter extends
         // Your holder should contain a member variable
         // for any view that will be set as you render a row
         public RichLinkView richLinkView;
+        public TextView linktext;
 
         // We also create a constructor that accepts the entire item row
         // and does the view lookups to find each subview
@@ -82,6 +84,7 @@ public class CoronaNewsAdapter extends
             super(itemView);
 
             richLinkView = (RichLinkView) itemView.findViewById(R.id.richLinkView);
+            linktext = itemView.findViewById(R.id.linktext);
         }
     }
 }

@@ -104,6 +104,24 @@
                 android:text="124"
                 />
         </TableRow>
+        <TableRow>
+            <Button
+                android:id="@+id/view_news_stub"
+                android:layout_weight="0.7"
+                android:layout_width="150dp"
+                android:visibility="invisible"
+                android:layout_height="wrap_content"
+                android:text="View news articles"
+                ></Button>
+            <Button
+                android:id="@+id/view_news"
+                android:layout_weight="0.3"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:text="View news articles"
+                ></Button>
+        </TableRow>
+
     </TableLayout>
 
 

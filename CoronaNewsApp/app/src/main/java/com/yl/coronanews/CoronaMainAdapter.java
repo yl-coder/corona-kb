@@ -5,11 +5,14 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.button.MaterialButton;
 
 import java.util.List;
 
@@ -68,6 +71,15 @@ public class CoronaMainAdapter extends
                 view.getContext().startActivity(intent);
             }
         });
+
+        holder.viewNews.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(view.getContext(), NewsActivity.class);
+                intent.putExtra("countryCode", countryCode);
+                view.getContext().startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -82,6 +94,7 @@ public class CoronaMainAdapter extends
         // for any view that will be set as you render a row
         public View itemView;
         public TextView country, confirmed, deaths, recovered, countryCode;
+        public Button viewNews;
 
         // We also create a constructor that accepts the entire item row
         // and does the view lookups to find each subview
@@ -91,7 +104,7 @@ public class CoronaMainAdapter extends
             super(itemView);
             this.itemView = itemView;
 
-
+            viewNews = itemView.findViewById(R.id.view_news);
             country = (TextView) itemView.findViewById(R.id.country_ph);
             confirmed = (TextView) itemView.findViewById(R.id.confirmed_ph);
             deaths = (TextView) itemView.findViewById(R.id.deaths_ph);

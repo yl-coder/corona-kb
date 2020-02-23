@@ -8,6 +8,16 @@
     android:paddingBottom="10dp"
     >
 
+    <TextView
+        android:id="@+id/linktext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:autoLink="web">
+
+
+    </TextView>
+
+
     <io.github.ponnamkarthik.richlinkpreview.RichLinkView
         android:id="@+id/richLinkView"
     android:layout_width="match_parent"
